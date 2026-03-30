@@ -32,39 +32,43 @@ app.get("/health", (_req, res) => {
   });
 });
 
-// Demo endpoint — shows example flow with real agent data
-app.get("/demo", async (_req, res) => {
-  try {
-    // Example agents — mix of trust levels
-    const examples = {
-      description:
-        "AgentProof trust-gated x402 API on Stellar. Pay with XLM, get tiered trust reports.",
-      flow: [
-        "1. GET /agent-report/:walletAddress",
-        "2. Receive 402 + Stellar payment instructions",
-        "3. Send XLM on Stellar testnet to oracle wallet",
-        "4. Retry with X-PAYMENT: <stellar_tx_hash>",
-        "5. Receive tiered trust report based on agent reputation",
-      ],
-      tiers: {
-        "HIGH_RISK (0-30)": "Basic response — score, tier, blocked flag",
-        "MEDIUM (31-60)": "Standard — score, signals, risk flags",
-        "TRUSTED (61-100)": "Full report — all signals, max exposure, insurance tier",
-      },
-      tryIt: {
-        endpoint: "/agent-report/<wallet_address>",
-        paymentRequired: `${process.env.PAYMENT_AMOUNT || "0.10"} XLM on Stellar testnet`,
-        payTo: getPublicKey(),
-        getFreeXLM: "https://friendbot.stellar.org/?addr=YOUR_ADDRESS",
-      },
-      oracle: "https://oracle.agentproof.sh",
-      leaderboard: "https://agentproof.sh",
-    };
+// Demo endpoint — structured for AI agents to parse and use immediately
+app.get("/demo", (_req, res) => {
+  const publicKey = getPublicKey();
+  const amount = process.env.PAYMENT_AMOUNT || "0.10";
 
-    res.json(examples);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  res.json({
+    service: "AgentProof trust-gated x402 API on Stellar",
+    version: "1.0.0",
+    description:
+      "Pay with XLM on Stellar testnet, get tiered trust reports based on on-chain agent reputation. Response detail scales with the queried agent's trust score.",
+    howToUse: {
+      step1: { action: "GET /agent-report/:walletAddress", result: "Returns 402 with payment instructions" },
+      step2: { action: `Send ${amount} XLM to ${publicKey} on Stellar testnet`, result: "You receive a Stellar transaction hash", getFreeXLM: "https://friendbot.stellar.org/?addr=YOUR_ADDRESS" },
+      step3: { action: "GET /agent-report/:walletAddress with header X-PAYMENT: <tx_hash>", result: "Returns tiered trust report" },
+    },
+    payment: {
+      network: "stellar-testnet",
+      asset: "XLM (native)",
+      amount,
+      payTo: publicKey,
+      explorer: `https://stellar.expert/explorer/testnet/account/${publicKey}`,
+    },
+    tiers: [
+      { range: "0-30", tier: "HIGH_RISK", access: "basic", fields: ["trustScore", "tier", "blocked"] },
+      { range: "31-60", tier: "MEDIUM", access: "standard", fields: ["trustScore", "tier", "name", "signals", "riskFlags", "feedbackCount"] },
+      { range: "61-100", tier: "TRUSTED", access: "full", fields: ["trustScore", "tier", "name", "signals", "riskFlags", "feedbackCount", "maxExposure", "insuranceTier", "registeredAt"] },
+    ],
+    testAgents: {
+      note: "Find real agent addresses at https://agentproof.sh — use wallet addresses from the leaderboard",
+      oracle: "https://oracle.agentproof.sh/v1/agent/:walletAddress",
+    },
+    endpoints: {
+      "/agent-report/:walletAddress": "x402 gated — tiered trust report",
+      "/demo": "Free — this endpoint, API docs for agents",
+      "/health": "Free — server status and payment wallet",
+    },
+  });
 });
 
 // Main paid endpoint — x402 gated
