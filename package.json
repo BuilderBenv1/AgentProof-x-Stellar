@@ -1,0 +1,16 @@
+{
+  "name": "stellar-agentproof",
+  "version": "1.0.0",
+  "description": "AgentProof trust-gated x402 API on Stellar",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node -r dotenv/config src/server.js",
+    "dev": "node -r dotenv/config src/server.js"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "^13.1.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.1"
+  },
+  "license": "MIT"
+}
