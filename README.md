@@ -124,7 +124,8 @@ Agent → GET /agent-report/:walletAddress
 ### What's real, what's not
 
 - **Real:** Stellar testnet payments — verified on-chain via Horizon API
-- **Real:** AgentProof trust scores — live oracle at oracle.agentproof.sh, 149.7K+ agents indexed across 21 EVM chains
+- **Real:** AgentProof trust scores — live oracle at oracle.agentproof.sh, 128.4K+ agents indexed across 21 EVM chains
+- **Real:** Authenticated partner API access — oracle queries use `X-Api-Key` header for higher rate limits
 - **Real:** Tiered access control — response content varies by trust score
 - **Note:** Payment asset is native XLM (not USDC) on Stellar testnet. Testnet XLM is free via [Friendbot](https://friendbot.stellar.org).
 
@@ -153,6 +154,7 @@ npm start
 |---|---|---|---|
 | `STELLAR_SECRET_KEY` | Yes | — | Server's Stellar testnet secret key |
 | `STELLAR_PUBLIC_KEY` | No | Derived from secret | Oracle wallet public key |
+| `AGENTPROOF_API_KEY` | No | — | Partner API key for authenticated oracle access (higher rate limits) |
 | `PAYMENT_AMOUNT` | No | 0.10 | XLM per request |
 | `PORT` | No | 3000 | Server port |
 
@@ -167,7 +169,7 @@ npm start
 ## Built by
 
 AgentProof — [agentproof.sh](https://agentproof.sh)
-ERC-8004 cross-chain reputation oracle, 149.7K+ agents indexed, 21 chains.
+ERC-8004 cross-chain reputation oracle, 128.4K+ agents indexed, 21 chains.
 
 ## License
 
