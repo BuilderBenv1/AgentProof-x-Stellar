@@ -27,6 +27,7 @@ app.get("/health", (_req, res) => {
     service: "stellar-agentproof",
     network: "stellar-testnet",
     oracle: "https://oracle.agentproof.sh",
+    oracleAuth: process.env.AGENTPROOF_API_KEY ? "partner" : "public",
     payTo: getPublicKey(),
     version: "1.0.0",
   });

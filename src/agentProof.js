@@ -1,14 +1,20 @@
 const ORACLE_BASE = "https://oracle.agentproof.sh/v1";
+const API_KEY = process.env.AGENTPROOF_API_KEY || null;
 
 /**
  * Query the AgentProof oracle for an agent's trust data.
- * The oracle is publicly queryable — no API key required.
+ * Authenticated via partner API key for higher rate limits
+ * and full signal access.
  */
 async function getAgentTrust(walletAddress) {
   const url = `${ORACLE_BASE}/agent/${walletAddress}`;
+  const headers = {};
+  if (API_KEY) {
+    headers["X-Api-Key"] = API_KEY;
+  }
 
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { headers });
 
     if (res.status === 404) {
       return {
